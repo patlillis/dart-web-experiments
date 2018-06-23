@@ -1,0 +1,8 @@
+name: dart_web_experiments
+dependencies:
+  threejs_facade:
+    git: https://github.com/block-forest/threejs-dart-facade
+dev_dependencies:
+  build_runner: ^0.8.10
+  build_web_compilers: ^0.4.0
+  sass_builder: ^2.0.0

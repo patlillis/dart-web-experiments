@@ -1,0 +1,15 @@
+targets:
+  $default:
+    sources: ["*"]
+
+  bliss_on_tap:
+    sources: [bliss_on_tap/**]
+    builders:
+        build_web_compilers|entrypoint:
+            generate_for: [bliss_on_tap/main.dart]
+
+  hello_world:
+    sources: [hello_world/**]
+    builders:
+        build_web_compilers|entrypoint:
+            generate_for: [hello_world/main.dart]
