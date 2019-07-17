@@ -42,7 +42,7 @@ Vector3 normalizedDeviceCoordinates(Point screenCoordinates) {
   return Vector3(
     (screenCoordinates.x / window.innerWidth) * 2 - 1,
     -(screenCoordinates.y / window.innerHeight) * 2 + 1,
-    0,
+    50,
   );
 }
 
@@ -120,14 +120,16 @@ void onResize() {
 }
 
 void onTimerTick(_) {
-  // print('onTimerTick before: ${control.position.toArray()}');
-  control.position.x += easeAmount * (controlTargetX - control.position.x);
-  // print('onTimerTick after: ${control.position.toArray()}');
+  print('onTimerTick; '
+      'controlX: ${control.position.x}, '
+      'targetX: $controlTargetX');
+  control.position.x = controlTargetX;
+  // control.position.x += easeAmount * (controlTargetX - control.position.x);
 
   drawScene();
 
   // Stop the timer when the target position is reached (close enough).
-  if (isDragging && (control.position.x - controlTargetX).abs() > 0.001) {
+  if (isDragging) {
     window.animationFrame.then(onTimerTick);
   }
 }
@@ -206,7 +208,7 @@ bool onMouseDown(MouseEvent event) {
 }
 
 void onMouseUp(MouseEvent _) {
-  print('mouse up');
+  // print('mouse up');
   mouseDownListener = document.onMouseDown.listen(onMouseDown);
   mouseUpListener?.cancel();
   if (isDragging) {
@@ -217,8 +219,17 @@ void onMouseUp(MouseEvent _) {
 
 void onMouseMove(MouseEvent event) {
   print('mouse move');
-
-  raycaster.setFromCamera(normalizedDeviceCoordinates(event.client), camera);
+  // var projector = Projector();
+  // var mouse3D = normalizedDeviceCoordinates(event.client);
+  // mouse3D = mouse3D.unproject(camera);
+  // // projector.unprojectVector(mouse3D, camera);
+  // mouse3D.sub(camera.position);
+  // mouse3D.normalize();
+  // var localRaycaster = Raycaster(camera.position, mouse3D);
+  // var planeIntersection = localRaycaster.intersectObject(controlPlane);
+  var mouse3D = normalizedDeviceCoordinates(event.client);
+  mouse3D.unproject(camera);
+  raycaster.setFromCamera(mouse3D, camera);
   final planeIntersection = raycaster.intersectObject(controlPlane);
 
   // Clamp x and y positions to prevent object from dragging outside of canvas.
@@ -227,7 +238,7 @@ void onMouseMove(MouseEvent event) {
     var positionX = intersection.point.x; // - dragHoldX;
 
     var fov = degToRad(camera.fov);
-    var height = tan(fov / 2) * 50;
+    var height = tan(fov / 2) * 2;
     var width = height * camera.aspect;
 
     // print(Vector3(-1, -1, 50).unproject(camera).toArray());
@@ -236,6 +247,7 @@ void onMouseMove(MouseEvent event) {
     // print('nearWidth: $nearWidth, farWidth: $farWidth');
 
     controlTargetX = positionX; //.clamp(-width, width);
+    print('positionX: $positionX');
 
     // control.position.x = positionX.clamp(
     //   (camera. * 1 / 4) - circle.parameters.radius,
